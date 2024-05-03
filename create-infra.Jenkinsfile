@@ -28,7 +28,7 @@ pipeline {
         stage('Creating ALB') {
             steps {
                 dir('DB') {
-                git branch: 'main', url: 'https://github.com/b57-clouddevops/terraform-loadbalancers.git'
+                git branch: 'main', url: 'https://github.com/ashifanassar/terraform-loadbalancers.git'
                         sh '''
                             rm -rf .terraform
                             terrafile -f env-dev/Terrafile
