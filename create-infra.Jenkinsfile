@@ -11,7 +11,7 @@ pipeline {
         stage('Creating VPC') {
             steps {
                 dir('VPC') {
-                git branch: 'main', url: 'https://github.com/b57-clouddevops/terraform-vpc.git'
+                git branch: 'main', url: 'https://github.com/ashifanassar/terraform-vpc.git'
                         sh '''
                             terrafile -f env-dev/Terrafile
                             terraform init --backend-config=env-${ENV}/${ENV}-backend.tfvars
@@ -25,7 +25,7 @@ pipeline {
         stage('Creating Databases') {
             steps {
                 dir('DB') {
-                git branch: 'main', url: 'https://github.com/b57-clouddevops/terraform-databases.git'
+                git branch: 'main', url: 'https://github.com/ashifanassar/terraform-databases.git'
                         sh '''
                             rm -rf .terraform
                             terrafile -f env-dev/Terrafile
