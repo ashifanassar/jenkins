@@ -7,19 +7,37 @@ pipeline {
     parameters {
         choice(name: 'ENV', choices: ['dev', 'prod'], description: 'Select the environment')
     }
-    stages {
-        stage('Creating VPC') {
+
+
+
+
+            stage('Creating ALB') {
             steps {
-                dir('VPC') {
-                git branch: 'main', url: 'https://github.com/ashifanassar/terraform-vpc.git'
+                dir('ALB') {
+                git branch: 'main', url: 'https://github.com/b57-clouddevops/terraform-loadbalancers.git'
                         sh '''
+                            rm -rf .terraform
                             terrafile -f env-dev/Terrafile
                             terraform init --backend-config=env-${ENV}/${ENV}-backend.tfvars
                             terraform plan -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
-                            terraform apply -auto-approve -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
+                            terraform apply -auto-approve -var-file=env-${ENV}/${ENV}.tfvars
                         '''
                 }
             }
+        }
+    // stages {
+    //     stage('Creating VPC') {
+    //         steps {
+    //             dir('VPC') {
+    //             git branch: 'main', url: 'https://github.com/ashifanassar/terraform-vpc.git'
+    //                     sh '''
+    //                         terrafile -f env-dev/Terrafile
+    //                         terraform init --backend-config=env-${ENV}/${ENV}-backend.tfvars
+    //                         terraform plan -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
+    //                         terraform apply -auto-approve -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
+    //                     '''
+    //             }
+    //         }
         }
 
         stage('Creating Databases') {
