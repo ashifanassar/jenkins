@@ -55,12 +55,14 @@ pipeline {
                 stage("Unit Testing") {
                     steps {
                         sh "echo Unit Testing In Progress"
+                        //sh "npm test"
                         sh "sleep 60"                
                     }
                 }
                 stage("Integration Testing") {
                     steps {
                         sh "echo Integration Testing In Progress"
+                        //sh "npm verify"
                         sh "sleep 60"                
                     }
                 }
