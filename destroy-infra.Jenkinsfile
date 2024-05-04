@@ -8,44 +8,49 @@ pipeline {
         choice(name: 'ENV', choices: ['dev', 'prod'], description: 'Select the environment')
     }
     stages {
-        stage('Destroying Databases') {
+        stage('Creating VPC') {
             steps {
-                dir('DB') {
-                git branch: 'main', url: 'https://github.com/b57-clouddevops/terraform-databases.git'
+                dir('VPC') {
+                git branch: 'main', url: 'https://github.com/ashifanassar/terraform-vpc.git'
                         sh '''
-                            rm -rf .terraform
                             terrafile -f env-dev/Terrafile
                             terraform init --backend-config=env-${ENV}/${ENV}-backend.tfvars
+                            terraform plan -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
                             terraform destroy -auto-approve -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
                         '''
                 }
             }
         }
 
-        stage('Destroying ALB') {
+        stage('Creating ALB') {
             steps {
-                dir('VPC') {
-                git branch: 'main', url: 'https://github.com/b57-clouddevops/terraform-loadbalancers.git'
+                dir('ALB') {
+                git branch: 'main', url: 'https://github.com/ashifanassar/terraform-loadbalancers.git'
                         sh '''
+                            rm -rf .terraform
                             terrafile -f env-dev/Terrafile
                             terraform init --backend-config=env-${ENV}/${ENV}-backend.tfvars
-                            terraform destroy -auto-approve -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
+                            terraform plan -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
+                            terraform destroy -auto-approve -var-file=env-${ENV}/${ENV}.tfvars
                         '''
                 }
             }
         }
-        stage('Destroying VPC') {
-            steps {
-                dir('VPC') {
-                git branch: 'main', url: 'https://github.com/b57-clouddevops/terraform-vpc.git'
-                        sh '''
-                            terrafile -f env-dev/Terrafile
-                            terraform init --backend-config=env-${ENV}/${ENV}-backend.tfvars -reconfigure
-                            terraform destroy -auto-approve -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
-                        '''
-                }
-            }
-        }
+
+        // stage('Creating Databases') {
+        //     steps {
+        //         dir('DB') {
+        //         git branch: 'main', url: 'https://github.com/ashifanassar/terraform-databases.git'
+        //                 sh '''
+        //                     rm -rf .terraform
+        //                     terrafile -f env-dev/Terrafile
+        //                     terraform init --backend-config=env-${ENV}/${ENV}-backend.tfvars
+        //                     terraform plan -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
+        //                     terraform apply -auto-approve -var-file=env-${ENV}/${ENV}.tfvars -var ENV=${ENV}
+        //                 '''
+        //         }
+        //     }
+        // }
     }
         post {
             always {
